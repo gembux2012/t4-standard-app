@@ -14,13 +14,13 @@ class User
         if (null !== $login) {
             try {
                 $identity = new Identity();
-                $user = $identity->authenticate($login);
-                $this->app->flash->message = 'Добро пожаловать, ' . $user->email . '!';
-                $this->redirect('/');
-            } catch (\App\Components\Auth\MultiException $e) {
-                $this->data->errors = $e;
+                $identity->authenticate($login);
+               // $this->app->flash->message = 'Добро пожаловать, ' . $user->email . '!';
+               // $this->redirect('/');
+            } catch (\T4\Core\Exception $e) {
+                $this->data->login_err = $e->getMessage();
             }
-            $this->data->email = $login->email;
+            $this->data->user = $login->email;
         }
     }
 
@@ -47,6 +47,31 @@ class User
         }
     }
 
+    public function actionGetUser()
+    {
+        //var_dump($this->app->user);die;
+        $this->data->user=$this->app->user->email;
+    }
+
+    public function actionGetLogin($login = null)
+    {
+        $err = false;
+        if (null !== $login) {
+            $user = \App\Models\User::findByEmail($login->email);
+            if (empty($user)) {
+                $this->data->errors = ['errlogin' => 'Пользователь c таким e-mail не зарегестрирован! '];
+                $err = true;
+            } else if (!\T4\Crypt\Helpers::checkPassword($login->password, $user->password)) {
+                $this->data->errors = ['errpassword' => 'Неверный пароль!'];
+                $err = true;
+            }
+            if (!$err) {
+                $identity = new Identity();
+                $identity->login($user);
+                Application::getInstance()->user = $user;
+            }
+        }
+    }
     /*
 public function actionRestorePassword($restore = null)
 {

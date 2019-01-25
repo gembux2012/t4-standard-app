@@ -1156,7 +1156,7 @@ var requirejs, require, define;
                 });
                 if (name === 'error') {
                     //Now that the error handler was triggered, remove
-                    //the listeners, since this broken Module instance
+                    //the listeners, since this broken Module.old instance
                     //can stay around for a while in the registry.
                     delete this.events[name];
                 }
@@ -1385,7 +1385,7 @@ var requirejs, require, define;
                         id = map.id;
 
                         if (!hasProp(defined, id)) {
-                            return onError(makeError('notloaded', 'Module name "' +
+                            return onError(makeError('notloaded', 'Module.old name "' +
                                         id +
                                         '" has not been loaded yet for context: ' +
                                         contextName +

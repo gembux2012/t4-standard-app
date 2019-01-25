@@ -2,74 +2,140 @@
 
 return [
 
-    '//User/Login' => [
-        'title' => 'Форма входа',
-        'desc' => 'Форма входа на сайт',
-        'options' => [],
-    ],
-    '//User/Register' => [
-        'title' => 'Форма регистрации',
-        'desc' => 'Форма регистрации пользователя',
+    '///Login' => [
+        'title' => 'Блок входа на сайт',
+        'desc' => 'Форма входа пользователя',
         'options' => [],
     ],
 
-    /**
-     * News module
-     */
-
-    '/News//' => [
-        'title' => 'Главная страница новостей',
-        'desc' => 'Главная страница модуля Новости в блоке',
-        'options' => [],
-    ],
-
-    '/News//One' => [
-        'title' => 'Новость',
-        'desc' => 'Выбранная по ID новость',
+    '///BlockHtml' => [
+        'title' => 'Блок с произвольным текстом',
+        'desc' => 'Выводит произвольный HTML',
         'options' => [
-            'id' => [
-                'title' => 'Новость',
-                'type' => 'select:model',
-                'model' => \App\Modules\News\Models\Story::class,
-                'default' => 1,
-                'cache' => ['time' => 60],
+            'html' => [
+                'title' => 'Текст',
+                'type' => 'text',
+                'default' => '',
             ]
-        ],
-
+        ]
     ],
 
-    /**
-     * Pages module
+    '//Search/' => [
+        'title' => 'Поиск по сайту',
+        'desc' => 'Поиск по сайту',
+        'options' => [],
+    ],
+
+    '/Gallery/LastAlbums/' => [
+        'title' => 'Блок последних фотоальбомов',
+        'desc' => 'Вывод последних фотоальбомов',
+        'options' => [
+            'count' => [
+                'title' => 'Число выводимых фотоальбомов',
+                'type' => 'int',
+                'default' => 4,
+            ],
+        ],
+    ],
+
+    '///Menu' => [
+        'title' => 'Блок главного меню',
+        'desc' => 'Вывод дерева главного меню',
+        'options' => [],
+    ],
+
+    /*
+     * Pages
      */
 
-    '/Pages//PageByUrl' => [
-        'title' => 'Страница сайта',
-        'desc' => 'Выводит выбранную страницу',
+    '/Pages//PageText' => [
+        'title' => 'Блок с текстом выбранной страницы',
+        'desc' => 'Выводит текст выбранной страницы',
         'options' => [
             'id' => [
                 'title' => 'Страница',
                 'type' => 'select:tree',
-                'model' => \App\Modules\Pages\Models\Page::class,
+                'model' => 'App\Modules\Pages\Models\Page',
                 'default' => 1,
             ]
-        ],
-        'cache' => ['time' => 60],
+        ]
     ],
-
-    /**
-     * Maps module
-     */
-
-    '/Maps//Map' => [
-        'title' => 'Карта',
-        'desc' => 'Блок с заданной картой',
+    '/Pages//Page' => [
+        'title' => 'Блок выбранной страницы',
+        'desc' => 'Выводит выбранную страницу в заданном шаблоне',
         'options' => [
             'id' => [
-                'title' => 'Карта',
-                'type' => 'select:model',
-                'model' => \App\Modules\Maps\Models\Map::class,
+                'title' => 'Страница',
+                'type' => 'select:tree',
+                'model' => 'App\Modules\Pages\Models\Page',
                 'default' => 1,
             ]
+        ]
+    ],
+    '/Pages//Tree' => [
+        'title' => 'Блок дерева страницы',
+        'desc' => 'Выводит полное дерево страниц',
+        'options' => [
+        ]
+    ],
+    '/Pages//SubTree' => [
+        'title' => 'Блок поддерева страницы',
+        'desc' => 'Выводит поддерево страниц, начиная с заданной страницы',
+        'options' => [
+            'id' => [
+                'title' => 'Страница',
+                'type' => 'select:tree',
+                'model' => 'App\Modules\Pages\Models\Page',
+                'default' => 1,
+            ]
+        ]
+    ],
+
+    /*
+     * News
+     */
+
+    '/News//' => [
+        'title' => 'Лента новостей',
+        'desc' => 'Выводит последние новости',
+        'options' => [
+            'count' => [
+                'title' => 'Число выводимых новостей',
+                'type' => 'int',
+                'default' => 10,
+            ],
+        ],
+        'cache' => false,
+    ],
+
+    '/News//NewsByTopic' => [
+        'title' => 'Лента раздела новостей',
+        'desc' => 'Выводит последние новости определенного раздела',
+        'options' => [
+            'id' => [
+                'title' => 'Раздел',
+                'type' => 'select:tree',
+                'model' => 'App\Modules\News\Models\Topic',
+                'default' => 1,
+            ],
+            'count' => [
+                'title' => 'Число выводимых новостей',
+                'type' => 'int',
+                'default' => 5,
+            ],
+            'color' => [
+                'title' => 'Класс цвета блока',
+                'type' => 'select',
+                'values' => [
+                    'default' => 'default',
+                    'primary' => 'primary',
+                    'success' => 'success',
+                    'warning' => 'warning',
+                    'danger' => 'danger',
+                    'info' => 'info',
+                ],
+                'default' => 'default',
+            ],
         ],
         'cache' => ['time' => 60],
     ],
@@ -94,4 +160,15 @@ return [
         'desc' => 'Форма обратной связи модуля Контакты',
         'options' => [],
     ],
+
+    '/Gallery//AlbumByUrl' => [
+        'title' => 'галерея демо',
+        'desc' => 'галерея демо',
+        'options' => [
+            'url' => [
+                'default' => 'demo'],
+        ],
+    ]
+
+
 ];

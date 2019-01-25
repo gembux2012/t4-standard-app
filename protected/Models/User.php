@@ -21,7 +21,7 @@ class User
             'password'  => ['type'=>'string'],
         ],
         'relations' => [
-            'roles' => ['type' => self::MANY_TO_MANY, 'model' => Role::class],
+            'role' => ['type' => self::MANY_TO_MANY, 'model' => \App\Models\Role::class],
         ]
     ];
 
@@ -30,9 +30,11 @@ class User
         return $this->roles->collect('name');
     }
 
-    public function hasRole($roleName)
+
+
+    public function hasRole($role)
     {
-        return in_array($roleName, $this->getRoleNames());
+        return !empty($this->role) && ( ($role == $this->role[0]->name) || ($role == $this->role[0]->title) );
     }
 
 }

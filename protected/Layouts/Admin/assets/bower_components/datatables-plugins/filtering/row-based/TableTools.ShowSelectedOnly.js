@@ -146,7 +146,7 @@
 
             var oTable = $('#' + oSettings.sTableId).dataTable();
             var row = oTable.fnGetNodes(iDataIndex);
-            var oTableTools = TableTools.fnGetInstance(oSettings.sTableId);
+            var oTableTools = TableTools.fnInstance(oSettings.sTableId);
             var isSelected = oTableTools.fnIsSelected(row);
 
             return isSelected;

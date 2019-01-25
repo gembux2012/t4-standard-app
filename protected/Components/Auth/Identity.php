@@ -5,6 +5,7 @@ namespace App\Components\Auth;
 use App\Models\User;
 use App\Models\UserSession;
 use T4\Mvc\Application;
+use T4\Auth\Exception;
 use T4\Core\Session;
 
 class Identity
@@ -13,39 +14,38 @@ class Identity
     const  ERROR_INVALID_CAPTCHA = 102;
     const ERROR_INVALID_CODE = 103;
     const ERROR_INVALID_TIME = 104;
+    const ERROR_INVALID_NAME = 105;
     const AUTH_COOKIE_NAME = 'T4auth';
 
     public function authenticate($data)
     {
-        $errors = new MultiException();
+
 
         if (empty($data->email)) {
-            $errors->add('Не введен e-mail', self::ERROR_INVALID_EMAIL);
+            throw new Exception('Не введен e-mail ?',  self::ERROR_INVALID_NAME);
         }
         if ( empty($data->password)) {
-            $errors->add('Не введен пароль', self::ERROR_INVALID_PASSWORD);
+            throw new Exception('Не введен пароль ?',  self::ERROR_INVALID_NAME);
         }
 
-        if (!$errors->isEmpty())
-            throw $errors;
+
 
         $user = User::findByEmail($data->email);
         if (empty($user)) {
-            $errors->add('Пользователь с e-mail ' . $data->email . ' не существует', self::ERROR_INVALID_EMAIL);
+            throw new Exception('Имя пользователя не существует ?',  self::ERROR_INVALID_NAME);
         }
 
-        if (!$errors->isEmpty())
-            throw $errors;
 
-        if (!\T4\Crypt\Helpers::checkPassword($data->password, $user->password)) {
-            $errors->add('Неверный пароль', self::ERROR_INVALID_PASSWORD);
+
+        if (!password_verify($data->password, $user->password)) {
+              //var_dump($user->password,\T4\Crypt\Helpers::hashPassword('123456'));die;
+            throw new Exception('Невере=ный пароль ?');
         }
 
-        if (!$errors->isEmpty())
-            throw $errors;
+
 
         $this->login($user);
-        Application::getInstance()->user = $user;
+        Application::Instance()->user = $user;
         return $user;
     }
 
@@ -101,7 +101,7 @@ class Identity
         if (!$errors->isEmpty())
             throw $errors;
 
-        $app = Application::getInstance();
+        $app = Application::Instance();
         if ($app->config->extensions->captcha->register) {
             if (empty($data->captcha)) {
                 $errors->add('Не введена строка с картинки', self::ERROR_INVALID_CAPTCHA);
@@ -128,7 +128,7 @@ class Identity
      */
     public function login($user)
     {
-        $app = Application::getInstance();
+        $app = Application::Instance();
         $expire = isset($app->config->auth) && isset($app->config->auth->expire) ?
             time() + $app->config->auth->expire :
             0;
@@ -158,7 +158,7 @@ class Identity
         $session->delete();
         \T4\Http\Helpers::unsetCookie(self::AUTH_COOKIE_NAME);
 
-        $app = Application::getInstance();
+        $app = Application::Instance();
         $app->user = null;
     }
 

@@ -36,8 +36,8 @@ class Block
     public function getConfig()
     {
         return
-            !empty(Application::getInstance()->config->blocks->{$this->path})
-            ? Application::getInstance()->config->blocks->{$this->path}
+            !empty(Application::Instance()->config->blocks->{$this->path})
+            ? Application::Instance()->config->blocks->{$this->path}
             : [];
     }
 
@@ -70,7 +70,7 @@ class Block
     public function getAllTemplates()
     {
         $route = new Route($this->path);
-        $controller = Application::getInstance()->createController($route->module, $route->controller);
+        $controller = Application::Instance()->createController($route->module, $route->controller);
         $templates = [];
         foreach ($controller->getTemplatePaths() as $path) {
             foreach (glob($path . DS . $route->action . '.*.block.html') as $filename) {

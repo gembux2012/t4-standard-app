@@ -8,11 +8,16 @@ class Index
     extends Controller
 {
 
-    public function actionDefault()
+    public function actionDefault($menu='classic')
     {
+        $this->data->menu=$menu;
     }
 
     public function action404()
+    {
+    }
+
+    public function action403()
     {
     }
 

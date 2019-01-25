@@ -11,16 +11,30 @@ return [
         ],
     ],
     'auth' => [
-        'expire' => 1500 // 25 min
+        'expire' => 36000 // 25 min
     ],
     'extensions' => [
         'jquery' => [
             'location' => 'local',
+            'ui' => true,
         ],
 
         'bootstrap' => [
             'location' => 'local',
             'theme' => '',
+        ],
+
+        'ckeditor' => [
+            'location' => 'local',
+            'autoload' => false,
+        ],
+
+        'ckfinder' => [
+            'autoload' => false,
+        ],
+
+        'jstree' => [
+            'autoload' => false,
         ]
     ],
 

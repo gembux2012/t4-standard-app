@@ -1,0 +1,46 @@
+{% extends 'Main/Index.html' %}
+{% block content %}
+<script >
+    $(function() {
+            $('#load').load('/Protected/Modules/Gallery/Templates/Index/Load/GetAlbumByUrl.html', function() {
+                var template = document.getElementById('templates').innerHTML;
+                $.get('/Gallery/getAlbumByUrl.json?url=demo', function (result) {
+
+                    var view =  {items: result.items};
+                    var output = Mustache.render(template, view);
+
+                    $("#content").html(output);
+
+                    $('#container_gallery').mosaicflow({
+                        itemSelector: '.mosaicflow__item',
+                        minItemWidth: 300
+                    });
+                });
+            })
+    });
+</script>
+<section id="load"></section>
+
+
+
+
+{#
+<sections id="templates" style="display: none;">
+    <div class="container">
+        <h1 class="h3 text-center">Галерея </h1>
+        <div id="container_gallery">
+            {{#items}}
+            <div class="mosaicflow__item">
+                <a data-fancybox="gallery" href="{{#image}}{{image}}{{/image}}">
+                    <img class="img-responsive" src="{{{#image}}{{image}}{{/image}}" alt="">
+                </a>
+                <p class="caption">{{#title}}{{title}}{{/title}}</p>
+            </div>
+            {{/items}}
+        </div>
+    </div>
+
+</sections>
+#}
+{% endblock %}
+

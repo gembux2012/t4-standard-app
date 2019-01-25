@@ -27,7 +27,7 @@ class Story
 
     public function uploadImage($formFieldName)
     {
-        $request = Application::getInstance()->request;
+        $request = Application::Instance()->request;
         if (!$request->existsFilesData() || !$request->isUploaded($formFieldName) || $request->isUploadedArray($formFieldName))
             return $this;
 

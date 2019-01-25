@@ -54,7 +54,7 @@ class m_0000000001_CreateWebApp
 
             $userAdminId = $this->insert('__users', [
                 'email' => 'admin@t4.org',
-                'password' => \T4\Crypt\Helpers::hashPassword('123456'),
+                'password' => password_hash('123456', PASSWORD_DEFAULT),
             ]);
 
             $this->insert('__user_roles_to___users', [

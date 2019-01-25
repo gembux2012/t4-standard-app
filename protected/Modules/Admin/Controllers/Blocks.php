@@ -2,35 +2,43 @@
 
 namespace App\Modules\Admin\Controllers;
 
-use App\Components\Admin\Controller;
 use App\Models\Block;
 use T4\Core\Collection;
 use T4\Dbal\QueryBuilder;
+use T4\Mvc\Controller;
 
 class Blocks
     extends Controller
 {
 
+    protected function access($action, $params = [])
+    {
+        return !empty($this->app->user) && $this->app->user->hasRole('admin');
+    }
+
     public function actionDefault()
     {
+
         $this->data->sections = $this->app->config->sections;
+
         $this->data->blocksAvailable = $this->app->config->blocks;
 
-        $installed = Block::findAll(['order' => Block::getDbDriver()->quoteName('order')]);
-        $this->data->blocksInstalled = new Collection();
+        $installed = Block::findAll(['order' => '`order`']);
+
+        $this->data->blocksInstalledCount = count($installed);
         foreach ($installed as $block) {
-            $this->data->blocksInstalled[$block->section][] = $block;
+            $blocksInstalled[$block->section][] = $block;
+        }
+        if(isset($blocksInstalled)) {
+
+            $this->data->blocksInstalled = new Collection($blocksInstalled);
         }
     }
 
     public function actionSetupBlock($sectionId, $blockPath)
     {
         $query = new QueryBuilder();
-        $query
-            ->select('MAX(' . Block::getDbDriver()->quoteName('order') . ')')
-            ->from(Block::getTableName())
-            ->where('section=:section')
-            ->params([':section' => $sectionId]);
+        $query->select('MAX(`order`)')->from(Block::getTableName())->where('section=:section')->params([':section' => $sectionId]);
         $maxOrder = (int)$this->app->db->default->query($query)->fetchScalar();
 
         $block = new Block();
@@ -48,15 +56,18 @@ class Blocks
         if (false !== $block->save()) {
             $this->data->id = $block->getPK();
             $this->data->result = true;
+            $this->data->html = $this->view->render(
+                '_block_by_id.html',
+                [
+                    'id' => $block->getPK(),
+                    'sectionId' => $sectionId,
+                    'blocksInstalled' => Block::findAllByColumn('section', $sectionId, ['order' => '`order`']),
+                    'blocksAvailable' => $this->app->config->blocks
+                ]
+            );
         } else {
             $this->data->result = false;
         }
-    }
-
-    public function actionGetFormForBlock($id)
-    {
-        $this->data->blocksAvailable = $this->app->config->blocks;
-        $this->data->block = Block::findByPK($id);
     }
 
     public function actionUninstallBlock($id)
@@ -67,6 +78,21 @@ class Blocks
         } else {
             $this->data->result = false;
         }
+    }
+
+    public function actionSortBlocks($ids)
+    {
+        $order = 1;
+        foreach ($ids as $id) {
+            $block = Block::findByPK($id);
+            $block->order = $order * 10;
+            if (false === $block->save()) {
+                $this->data->result = false;
+                return;
+            };
+            $order++;
+        }
+        $this->data->result = true;
     }
 
     public function actionUpdateBlockOptions($id, $options)
