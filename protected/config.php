@@ -4,9 +4,9 @@ return [
     'db' => [
         'default' => [
             'driver' => 'mysql',
-            'host' => 'db',
-            'dbname' => 'jsondoc',
-            'user' => 'jsondoc',
+            'host' => 'localhost',
+            'dbname' => 'standard',
+            'user' => 'standard',
             'password' => 'Password00',
         ],
     ],

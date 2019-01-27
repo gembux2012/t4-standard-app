@@ -24,12 +24,12 @@ class Index extends Controller
     }
 
 
-    public function actiongetAlbumByUrl($url, $count=6,$page=1, $template=false)
+    public function actiongetAlbumByUrl($url, $count=6,$page=1)
     {
+        if("json" == $this->app->request->extension) {
 
+            // $this->data->page = $page;
 
-        if(!$template) {
-           // $this->data->page = $page;
             $album = Album::findByUrl($url);
             if (empty($album))
                 throw new E404Exception;
@@ -40,11 +40,13 @@ class Index extends Controller
               //  $this->data->total = Photo::countAllByColumn('__album_id', $album->Pk);
             //    $this->data->size = $count;
 
+
                 $items = Photo::findAllByColumn('__album_id', $album->Pk, [
                     'order' => 'published DESC',
                     'offset' => ($page - 1) * $count,
                     'limit' => $count,
                 ]);
+
 
 
                 $data = [];
@@ -56,7 +58,7 @@ class Index extends Controller
                 }
 
                 $this->data->items = $data;
-            };
+            }
         }
 
     }
