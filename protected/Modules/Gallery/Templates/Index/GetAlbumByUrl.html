@@ -1,21 +1,36 @@
 {% extends 'Main/Index.html' %}
 {% block content %}
 <script >
-    $(function() {
 
-                $.get('/Gallery/getAlbumByUrl.json/?url=demo', function (result) {
-                    var template = document.getElementById('templates').innerHTML;
-                    var view =  {items: result.items};
-                    var output = Mustache.render(template, view);
 
-                    $("#output").html(output);
+    function content(num){
+      $.get('/Gallery/getAlbumByUrl.json/?url=demo&page='+num, function (result) {
 
-                    $('#container_gallery').mosaicflow({
-                        itemSelector: '.mosaicflow__item',
-                        minItemWidth: 300
-                    });
-                });
+          var template = document.getElementById('templates').innerHTML;
+          var view =  {items: result.items};
+          var output = Mustache.render(template, view);
 
+          $("#output").html(output);
+
+         var container = $('#container_gallery').mosaicflow({
+              itemSelector: '.mosaicflow__item',
+              minItemWidth: 300,
+          });
+          container.resize();
+
+          });
+
+  }
+
+$(window).load(function(){
+
+         content(1);
+
+        $('#pagination').bootpag({
+            total: {{total}},
+        }).on("page", function(event, num){
+            content(num);
+        });
     });
 </script>
 
@@ -45,11 +60,17 @@
 </style>
 
 <sections id="output"></sections>
+
+<div class="text-center">
+<div id="pagination" class="pagination "></div>
+</div>
+
 <sections id="templates" style="display: none;">
-    {% raw %}
+
     <div class="container">
-        <h1 class="h3 text-center">Галерея</h1>
+        <h1 class="h3 text-center">Галерея  {{album.title}}</h1>
         <div id="container_gallery">
+            {% raw %}
             {{#items}}
             <div class="mosaicflow__item">
                 <a data-fancybox="gallery" href="{{image}}">

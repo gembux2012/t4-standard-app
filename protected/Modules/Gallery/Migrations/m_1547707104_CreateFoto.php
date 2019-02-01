@@ -11,7 +11,7 @@ class m_1547707104_CreateFoto
     public function up()
     {
         $this->createTable('photos', [
-            'title' => ['type' => 'string'],
+            'title' => ['type' => 'text'],
             'image' => ['type' => 'string'],
             'published' => ['type' => 'datetime'],
             '__album_id' => ['type' => 'link'],

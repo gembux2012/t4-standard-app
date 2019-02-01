@@ -13,7 +13,8 @@ use T4\Orm\ModelDataProvider;
 
 class Index extends Controller
 {
-    
+    private $total_foto;
+
     public function actionDefault( $page = 1)
     {
         $this->data->provider = new ModelDataProvider(Album::class, [
@@ -26,20 +27,23 @@ class Index extends Controller
 
     public function actiongetAlbumByUrl($url, $count=6,$page=1)
     {
+        $album = Album::findByUrl($url);
+
+
+        if (empty($album))
+            throw new E404Exception;
+        $this->total_foto = Photo::countAllByColumn('__album_id', $album->Pk);
+
         if("json" == $this->app->request->extension) {
 
-            // $this->data->page = $page;
 
-            $album = Album::findByUrl($url);
-            if (empty($album))
-                throw new E404Exception;
-           // $this->data->album = $album;
             if ($album->__rgt - $album->__lft > 1) {
-             //   $this->data->items = Album::findAllByQuery('SELECT * FROM albums WHERE __lft >' . $album->__lft . ' AND __rgt <' . $album->__rgt);
+                $items = Album::findAllByQuery('SELECT * FROM albums WHERE __lft >' . $album->__lft . ' AND __rgt <' . $album->__rgt);
             } else {
-              //  $this->data->total = Photo::countAllByColumn('__album_id', $album->Pk);
-            //    $this->data->size = $count;
 
+                $paginator['total'] = $this->total_foto;
+                $paginator['count'] = $count;
+                $paginator['page'] = $page;
 
                 $items = Photo::findAllByColumn('__album_id', $album->Pk, [
                     'order' => 'published DESC',
@@ -47,19 +51,22 @@ class Index extends Controller
                     'limit' => $count,
                 ]);
 
-
-
                 $data = [];
                 foreach ($items as $sub_item => $value) {
 
                     $data[] = $value->getData();
 
-
                 }
 
                 $this->data->items = $data;
+                $this->data->paginator=$paginator;
             }
+        } else {
+            $this->data->album = $album;
+
+            $this->data->total = ceil($this->total_foto / $count);
         }
+
 
     }
 
